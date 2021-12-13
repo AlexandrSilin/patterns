@@ -1,6 +1,8 @@
 package ru.web.server;
 
+import ru.web.server.config.Config;
 import ru.web.server.domain.HttpRequest;
+import ru.web.server.domain.HttpResponse;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -9,37 +11,44 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private final SocketService socketService;
     private final RequestParser parser;
+    private final Config config;
     private Path path;
 
-    public RequestHandler(SocketService socketService, RequestParser parser) {
+    public RequestHandler(SocketService socketService, RequestParser parser, Config config) {
         this.socketService = socketService;
         this.parser = parser;
+        this.config = config;
     }
 
     private void sendResponse(int code, String message) {
-        StringBuilder response = new StringBuilder();
-        response.append("HTTP/1.1 ").append(code).append(" ").append(message).append("\n");
-        response.append("Content-Type: text/html; charset=utf-8\n\n");
+        HttpResponse.HttpResponseBuilder responseBuilder = new HttpResponse.HttpResponseBuilder();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html; charset=utf-8\n\n");
+        responseBuilder.withHeaders(headers).withMessage(message);
         switch (code) {
             case 404:
-                response.append("<h1>Файл не найден!</h1>");
+                responseBuilder.withBody("<h1>Файл не найден!</h1>");
                 break;
             case 400:
-                response.append("<h1>BAD REQUEST</h1>");
+                responseBuilder.withBody("<h1>BAD REQUEST</h1>");
                 break;
             case 200:
                 try {
-                    Files.readAllLines(path).forEach(response::append);
+                    StringBuilder body = new StringBuilder();
+                    Files.readAllLines(path).forEach(body::append);
+                    responseBuilder.withBody(body.toString());
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
                 break;
         }
-        socketService.writeResponse(response.toString());
+        socketService.writeResponse(responseBuilder.build().toString());
     }
 
     private void deleteFile() throws IOException {
@@ -48,14 +57,18 @@ public class RequestHandler implements Runnable {
             return;
         }
         Files.delete(path);
-        StringBuilder response = new StringBuilder();
-        response.append("HTTP/1.1 ").append(200).append(" ").append("OK").append("\n");
-        response.append("Content-Type: text/html; charset=utf-8\n\n");
-        response.append("<h1>Файл удален</h1>");
-        socketService.writeResponse(response.toString());
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "text/html; charset=utf-8\n\n");
+        HttpResponse.HttpResponseBuilder responseBuilder = new HttpResponse.HttpResponseBuilder();
+        responseBuilder.withHeaders(headers)
+                .withCode(200)
+                .withMessage("OK")
+                .withBody("<h1>Файл удален</h1>");
+        socketService.writeResponse(responseBuilder.build().toString());
     }
 
-    private void createFile(HttpRequest httpRequest, boolean append) throws IOException {
+    private void createFile(HttpRequest httpRequest, boolean append)
+            throws IOException {
         Files.createFile(path);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path.toString(), append)));
         writer.write(httpRequest.getBody());
@@ -77,7 +90,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         try {
             HttpRequest httpRequest = parser.parseRequest(socketService.readRequest());
-            path = Paths.get(Config.WWW, httpRequest.getUrl());
+            path = Paths.get(config.getPath(), httpRequest.getUrl());
             switch (httpRequest.getMethod()) {
                 case GET:
                     if (isCorrectRequest()) {

@@ -1,16 +1,23 @@
 package ru.web.server;
 
 import ru.web.server.domain.HttpRequest;
-import ru.web.server.domain.Methods;
 
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RequestParser {
+    private RequestParser() {
+
+    }
+
+    public static RequestParser createRequestParser() {
+        return new RequestParser();
+    }
+
     public HttpRequest parseRequest(Deque<String> rawRequest) {
         String[] firstLine = rawRequest.pollFirst().split(" ");
-        Methods method = Methods.valueOf(firstLine[0]);
+        String method = firstLine[0];
         String url = firstLine[1];
         Map<String, String> headers = new HashMap<>();
         while (!rawRequest.isEmpty()) {
@@ -25,6 +32,11 @@ public class RequestParser {
         while (!rawRequest.isEmpty()) {
             body.append(rawRequest.pollFirst());
         }
-        return new HttpRequest(method, url, headers, body.toString());
+        return new HttpRequest.HttpRequestBuilder()
+                .withMethod(method)
+                .withHeaders(headers)
+                .withUrl(url)
+                .withBody(body.toString())
+                .build();
     }
 }
