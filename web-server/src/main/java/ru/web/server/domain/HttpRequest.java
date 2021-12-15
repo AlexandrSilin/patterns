@@ -3,16 +3,13 @@ package ru.web.server.domain;
 import java.util.Map;
 
 public class HttpRequest {
-    private final Methods method;
-    private final String url;
-    private final Map<String, String> headers;
-    private final String body;
+    private Methods method;
+    private String url;
+    private Map<String, String> headers;
+    private String body;
 
-    public HttpRequest(Methods method, String url, Map<String, String> headers, String body) {
-        this.method = method;
-        this.url = url;
-        this.headers = headers;
-        this.body = body;
+    private HttpRequest() {
+
     }
 
     public Methods getMethod() {
@@ -39,5 +36,36 @@ public class HttpRequest {
                 ", headers=" + headers +
                 ", body='" + body + '\'' +
                 '}';
+    }
+
+    public static class HttpRequestBuilder {
+        HttpRequest request = new HttpRequest();
+
+        public HttpRequestBuilder withMethod(String method) {
+            request.method = Methods.valueOf(method);
+            return this;
+        }
+
+        public HttpRequestBuilder withUrl(String url) {
+            request.url = url;
+            return this;
+        }
+
+        public HttpRequestBuilder withHeaders(Map<String, String> headers) {
+            request.headers = headers;
+            return this;
+        }
+
+        public HttpRequestBuilder withBody(String body) {
+            request.body = body;
+            return this;
+        }
+
+        public HttpRequest build() {
+            if (request.method == null || request.url == null || request.headers == null) {
+                throw new IllegalStateException();
+            }
+            return request;
+        }
     }
 }
