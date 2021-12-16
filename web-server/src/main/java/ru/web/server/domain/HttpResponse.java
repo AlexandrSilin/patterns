@@ -12,6 +12,14 @@ public class HttpResponse {
 
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -53,7 +61,7 @@ public class HttpResponse {
         }
 
         public HttpResponse build() {
-            if (response.headers == null) {
+            if (response.headers == null || response.code == 0 || response.message == null) {
                 throw new IllegalStateException();
             }
             return response;
