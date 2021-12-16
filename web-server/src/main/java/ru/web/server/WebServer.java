@@ -3,6 +3,7 @@ package ru.web.server;
 import ru.web.server.config.Config;
 import ru.web.server.config.ConfigFactory;
 import ru.web.server.service.RequestParserFactory;
+import ru.web.server.service.ResponseSerializerFactory;
 import ru.web.server.service.SocketServiceFactory;
 
 import java.io.IOException;
@@ -19,7 +20,8 @@ public class WebServer {
                 Socket socket = serverSocket.accept();
                 System.out.println("New client connected!");
                 new Thread(new RequestHandler(SocketServiceFactory.createSocketService(socket),
-                        RequestParserFactory.createRequestParser(), config)).start();
+                        RequestParserFactory.createRequestParser(),
+                        ResponseSerializerFactory.createResponseSerializer(), config)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();

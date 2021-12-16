@@ -4,6 +4,7 @@ import ru.web.server.config.Config;
 import ru.web.server.domain.HttpRequest;
 import ru.web.server.domain.HttpResponse;
 import ru.web.server.service.RequestParser;
+import ru.web.server.service.ResponseSerializer;
 import ru.web.server.service.SocketService;
 
 import java.io.BufferedWriter;
@@ -21,11 +22,13 @@ public class RequestHandler implements Runnable {
     private final RequestParser parser;
     private final Config config;
     private Path path;
+    private ResponseSerializer responseSerializer;
 
-    public RequestHandler(SocketService socketService, RequestParser parser, Config config) {
+    public RequestHandler(SocketService socketService, RequestParser parser, ResponseSerializer responseSerializer, Config config) {
         this.socketService = socketService;
         this.parser = parser;
         this.config = config;
+        this.responseSerializer = responseSerializer;
     }
 
     private void sendResponse(int code, String message) {
@@ -66,7 +69,7 @@ public class RequestHandler implements Runnable {
                 .withCode(200)
                 .withMessage("OK")
                 .withBody("<h1>Файл удален</h1>");
-        socketService.writeResponse(responseBuilder.build().toString());
+        socketService.writeResponse(responseSerializer.serialize(responseBuilder.build()));
     }
 
     private void createFile(HttpRequest httpRequest, boolean append)
