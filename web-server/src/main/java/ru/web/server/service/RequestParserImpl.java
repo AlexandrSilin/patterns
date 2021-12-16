@@ -1,4 +1,4 @@
-package ru.web.server;
+package ru.web.server.service;
 
 import ru.web.server.domain.HttpRequest;
 
@@ -6,13 +6,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestParser {
-    private RequestParser() {
+class RequestParserImpl implements RequestParser {
+    RequestParserImpl() {
 
-    }
-
-    public static RequestParser createRequestParser() {
-        return new RequestParser();
     }
 
     public HttpRequest parseRequest(Deque<String> rawRequest) {
