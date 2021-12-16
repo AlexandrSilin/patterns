@@ -2,6 +2,8 @@ package ru.web.server;
 
 import ru.web.server.config.Config;
 import ru.web.server.config.ConfigFactory;
+import ru.web.server.service.RequestParserFactory;
+import ru.web.server.service.SocketServiceFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,8 +18,8 @@ public class WebServer {
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("New client connected!");
-                new Thread(new RequestHandler(SocketService.createSocketService(socket),
-                        RequestParser.createRequestParser(), config)).start();
+                new Thread(new RequestHandler(SocketServiceFactory.createSocketService(socket),
+                        RequestParserFactory.createRequestParser(), config)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
