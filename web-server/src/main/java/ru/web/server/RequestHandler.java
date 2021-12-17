@@ -21,8 +21,8 @@ public class RequestHandler implements Runnable {
     private final SocketService socketService;
     private final RequestParser parser;
     private final Config config;
+    private final ResponseSerializer responseSerializer;
     private Path path;
-    private ResponseSerializer responseSerializer;
 
     public RequestHandler(SocketService socketService, RequestParser parser, ResponseSerializer responseSerializer, Config config) {
         this.socketService = socketService;
