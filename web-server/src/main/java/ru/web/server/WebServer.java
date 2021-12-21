@@ -2,6 +2,7 @@ package ru.web.server;
 
 import ru.web.server.config.Config;
 import ru.web.server.config.ConfigFactory;
+import ru.web.server.handler.RequestHandler;
 import ru.web.server.service.RequestParserFactory;
 import ru.web.server.service.ResponseSerializerFactory;
 import ru.web.server.service.SocketServiceFactory;
