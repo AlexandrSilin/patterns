@@ -25,7 +25,7 @@ public class MethodHandlerFactory {
         Set<Class<? extends MethodHandler>> subClasses = new HashSet<>();
         for (String className : reflections.getStore().get(SubTypesScanner.class.getSimpleName()).values()) {
             try {
-                Class subType = Class.forName(className);
+                Class<? extends MethodHandler> subType = (Class<? extends MethodHandler>) Class.forName(className);
                 if (MethodHandler.class.isAssignableFrom(subType)) {
                     subClasses.add(subType);
                 }
@@ -49,28 +49,21 @@ public class MethodHandlerFactory {
             for (int i = 1; i < classes.length; i++) {
                 MethodHandler tmp = methodHandler;
                 while (tmp.next != null) {
-                    tmp = methodHandler.next;
+                    tmp = tmp.next;
                 }
                 Field f = MethodHandler.class.getDeclaredField("next");
                 f.setAccessible(true);
-                // Remove final modifier
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
                 modifiersField.setAccessible(true);
                 modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-                method = Method.valueOf(classes[0].getSimpleName().split("(?=\\p{Upper})")[0].toUpperCase(Locale.ROOT));
+                method = Method.valueOf(classes[i].getSimpleName().split("(?=\\p{Upper})")[0].toUpperCase(Locale.ROOT));
                 f.set(tmp, Class.forName(classes[i].getName()).getDeclaredConstructors()[0]
                         .newInstance(method, null, socketService, responseSerializer, config));
-                return methodHandler;
+                modifiersField.setInt(f, f.getModifiers() & Modifier.FINAL);
             }
+            return methodHandler;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
-//        return new GetMethodHandler(Method.GET,
-//                new PostMethodHandler(Method.POST,
-//                        new PutMethodHandler(Method.PUT,
-//                                new DeleteMethodHandler(Method.DELETE, null, socketService, responseSerializer, config),
-//                                socketService, responseSerializer, config), socketService, responseSerializer, config),
-//                socketService, responseSerializer, config);
     }
 }
