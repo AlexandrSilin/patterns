@@ -18,7 +18,7 @@ import java.nio.file.Path;
 @Handler(order = 1)
 class PostMethodHandler extends MethodHandler {
     PostMethodHandler(Method method, MethodHandler next, SocketService socketService,
-                             ResponseSerializer responseSerializer, Config config) {
+                      ResponseSerializer responseSerializer, Config config) {
         super(method, next, socketService, responseSerializer, config);
     }
 

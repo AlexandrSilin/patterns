@@ -18,7 +18,7 @@ import java.nio.file.Path;
 @Handler(order = 2)
 class PutMethodHandler extends MethodHandler {
     PutMethodHandler(Method method, MethodHandler next, SocketService socketService,
-                            ResponseSerializer responseSerializer, Config config) {
+                     ResponseSerializer responseSerializer, Config config) {
         super(method, next, socketService, responseSerializer, config);
     }
 
