@@ -3,7 +3,7 @@ package ru.web.server.domain;
 import java.util.Map;
 
 public class HttpRequest {
-    private Methods method;
+    private Method method;
     private String url;
     private Map<String, String> headers;
     private String body;
@@ -12,7 +12,7 @@ public class HttpRequest {
 
     }
 
-    public Methods getMethod() {
+    public Method getMethod() {
         return method;
     }
 
@@ -42,7 +42,7 @@ public class HttpRequest {
         HttpRequest request = new HttpRequest();
 
         public HttpRequestBuilder withMethod(String method) {
-            request.method = Methods.valueOf(method);
+            request.method = Method.valueOf(method);
             return this;
         }
 

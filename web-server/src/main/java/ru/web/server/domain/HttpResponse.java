@@ -1,23 +1,23 @@
 package ru.web.server.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
-    private String message;
-    private int code;
+    private ResponseCode status;
     private Map<String, String> headers;
     private String body;
 
     private HttpResponse() {
-
+        headers = new HashMap<>();
     }
 
-    public String getMessage() {
-        return message;
+    public static HttpResponseBuilder createBuilder() {
+        return new HttpResponseBuilder();
     }
 
-    public int getCode() {
-        return code;
+    public ResponseCode getStatus() {
+        return status;
     }
 
     public Map<String, String> getHeaders() {
@@ -28,30 +28,21 @@ public class HttpResponse {
         return body;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder rawHeaders = new StringBuilder();
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            rawHeaders.append(entry.getKey()).append(": ").append(entry.getValue());
-        }
-        return "HTTP/1.1 " + code + " " + message + "\n" + rawHeaders + (body == null ? "" : body);
-    }
-
     public static class HttpResponseBuilder {
         HttpResponse response = new HttpResponse();
 
-        public HttpResponseBuilder withMessage(String message) {
-            response.message = message;
+        public HttpResponseBuilder withStatus(ResponseCode status) {
+            response.status = status;
             return this;
         }
 
-        public HttpResponseBuilder withCode(int code) {
-            response.code = code;
+        public HttpResponseBuilder withHeader(String key, String value) {
+            response.headers.put(key, value);
             return this;
         }
 
         public HttpResponseBuilder withHeaders(Map<String, String> headers) {
-            response.headers = headers;
+            response.headers.putAll(headers);
             return this;
         }
 
@@ -61,7 +52,7 @@ public class HttpResponse {
         }
 
         public HttpResponse build() {
-            if (response.headers == null || response.code == 0 || response.message == null) {
+            if (response.headers == null || response.status == null) {
                 throw new IllegalStateException();
             }
             return response;
