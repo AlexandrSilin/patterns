@@ -16,7 +16,7 @@ public abstract class MethodHandler {
     protected final Config config;
 
     MethodHandler(Method method, MethodHandler next, SocketService socketService,
-                         ResponseSerializer responseSerializer, Config config) {
+                  ResponseSerializer responseSerializer, Config config) {
         this.method = method;
         this.next = next;
         this.socketService = socketService;

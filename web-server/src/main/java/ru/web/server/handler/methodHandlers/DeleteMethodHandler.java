@@ -15,7 +15,7 @@ import java.nio.file.Path;
 @Handler(order = 3)
 class DeleteMethodHandler extends MethodHandler {
     DeleteMethodHandler(Method method, MethodHandler next, SocketService socketService,
-                               ResponseSerializer responseSerializer, Config config) {
+                        ResponseSerializer responseSerializer, Config config) {
         super(method, next, socketService, responseSerializer, config);
     }
 

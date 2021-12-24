@@ -1,7 +1,7 @@
 package Structural.decorator.coffee;
 
 public class VanillaCoffee extends Coffee {
-    private Coffee coffee;
+    private final Coffee coffee;
 
     public VanillaCoffee(Coffee coffee) {
         this.coffee = coffee;
