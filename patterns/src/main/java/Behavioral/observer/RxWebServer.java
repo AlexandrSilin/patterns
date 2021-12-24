@@ -9,8 +9,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.*;
 
 public class RxWebServer {
     public static void main(String[] args) throws IOException {
@@ -46,7 +45,12 @@ public class RxWebServer {
                 }).subscribe(request -> {
                     request.forEach(System.out::println);
                 });
-
+        List<String> list = new ArrayList<>();
+        list.add("wqe");
+        list.add("asd");
+        list.add("zxc");
+        list.add("vbn");
+        list.forEach(s -> s = s.toUpperCase(Locale.ROOT));
         System.out.println("Press any key");
         System.in.read();
     }
